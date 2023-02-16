@@ -1,11 +1,15 @@
 #import "AppDelegate.h"
 
+#if RCT_DEV
+#import <React/RCTDevLoadingView.h>
+#endif
+
+
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-
 #import <React/RCTAppSetupUtils.h>
-
+//#import <GoogleMaps/GoogleMaps.h>
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -30,7 +34,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+{ 
+//  [GMSServices provideAPIKey:@"AIzaSyB4G_sNoMyDFc4ZsS9ABuGU99H9HoS-XHk"];
+  
   RCTAppSetupPrepareApp(application);
 
   RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
@@ -44,6 +50,11 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 #endif
 
   NSDictionary *initProps = [self prepareInitialProps];
+  
+#if RCT_DEV
+  [bridge moduleForClass:[RCTDevLoadingView class]];
+#endif
+  
   UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"anyrent", initProps);
 
   if (@available(iOS 13.0, *)) {
