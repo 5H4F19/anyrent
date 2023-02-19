@@ -1,9 +1,12 @@
+import { async } from '@firebase/util'
+import { collection, doc, Firestore, getDocs, onSnapshot, query } from 'firebase/firestore'
 import { last } from 'lodash'
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { auth, database } from '../../../config/firebase'
 import { Container, Heading } from "../../components"
 import { FadeInView } from '../../components/fadeInView'
-
+import { AuthContext } from '../../context/authContext'
 
 const inbox = [
   {
@@ -28,9 +31,31 @@ const inbox = [
   },
 ]
 
-export const Inbox = () => {
-  // setIsOpen boolean variable in useState
-  const [isOpen, setIsOpen] = useState(false)
+interface Room {
+  id: string;
+  user: string;
+}
+
+export const Inbox = ({ navigation }: { navigation: any }) => {
+
+  const { currentUser } = useContext(AuthContext)
+
+  const [rooms, setRooms] = useState<Room[]>([])
+  useEffect(() => {
+
+    const getRooms = async () => {
+      const q = query(collection(database, "ROOMS"));
+
+      const querySnapshot = await getDocs(q);
+
+      querySnapshot.forEach((doc) => {
+        // doc.data() is never undefined for query doc snapshots
+        console.log(currentUser.uid, " => ", doc.data().user);
+      })
+    }
+
+    getRooms();
+  }, [])
 
   return (
     <Container>
@@ -43,7 +68,10 @@ export const Inbox = () => {
       <View className='w-full h-screen flex gap-y-3 my-4'>
         {inbox.map(({ user, lastMsg, img }, index) => (
           <FadeInView key={user} className="my-1">
-            <TouchableOpacity className='flex flex-row items-center mx-4'>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Chat')}
+              className='flex flex-row items-center mx-4'
+            >
               <Image source={img} className="w-12 h-12 rounded-full" />
               <View className='mx-3  flex justify-between'>
                 <Text className=" text-gray-800 font-['Inter-SemiBold'] text-sm">{user}</Text>

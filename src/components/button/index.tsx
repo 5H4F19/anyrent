@@ -1,5 +1,6 @@
 import React, { memo } from 'react'
-import { ButtonProps, Text, TouchableOpacity, View } from 'react-native'
+import { ActivityIndicator, ButtonProps, Text, TouchableHighlightProps, TouchableOpacity, View } from 'react-native'
+import { Loader } from '../loader'
 
 export const type = {
   primary: {
@@ -15,19 +16,21 @@ export const type = {
 interface LocalProps {
   className?: string
   children: string
+  color?: string
 }
-type IButtonProps = LocalProps & Partial<ButtonProps>
+type IButtonProps = LocalProps & Partial<TouchableHighlightProps>
 
 export const Button = ({ ...props }: IButtonProps) => {
   return (
-    <TouchableOpacity className="flex-1">
+    <TouchableOpacity {...props}>
       <View
         className={`${props.className} text-white font-['Inter-Bold'] 
-            ${props.color === 'outline' ? `${type["outline"].bg}` : `${type["primary"].bg}`} 
+            ${props.color === 'outline' ? `${type["outline"].bg}` : `${type["primary"].bg}`}
+            ${props.disabled && "opacity-20"}
             text-center p-3 rounded-lg w-full my-2 ${props.className}`}>
         <Text
           className={`${props.color === 'outline' ? type["outline"].text : type["primary"].text} font-['Inter-Bold'] text-center rounded-lg w-full`}>
-          {props.children}
+          {props.disabled ? <Loader /> : props.children}
         </Text>
       </View>
     </TouchableOpacity>
